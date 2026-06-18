@@ -10,7 +10,6 @@ jobs:
 contract-tests:
 runs-on: ubuntu-latest
 
-```
 steps:
   - name: Checkout Repository
     uses: actions/checkout@v4
@@ -49,4 +48,3 @@ steps:
     with:
       name: specmatic-report
       path: build/reports/specmatic/
-```
