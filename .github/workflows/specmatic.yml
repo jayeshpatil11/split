@@ -32,9 +32,20 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Run Specmatic Tests
+      - name: Install Specmatic
         run: |
-          docker run --network host \
-            -v ${{ github.workspace }}:/usr/src/app \
-            specmatic/specmatic test openapi/expense-sharing-api.yaml \
-            --host=http://host.docker.internal:8000
+          curl -L https://specmatic.io/download/latest/linux/specmatic -o specmatic
+          chmod +x specmatic
+      
+      - name: Run Contract Tests
+        run: |
+          ./specmatic test --host http://localhost:8000
+
+
+
+
+
+
+
+
+
