@@ -2,6 +2,9 @@ name: Specmatic Contract Tests
 
 on:
   push:
+    branches:
+      - main
+      - master
   pull_request:
 
 jobs:
@@ -9,43 +12,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v6
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: "3.11"
 
-      - name: Install Backend Dependencies
+      - name: Install dependencies
+        run: |
+          pip install -r backend/requirements.txt
+
+      - name: Start FastAPI server
         run: |
           cd backend
-          pip install -r requirements.txt
+          nohup uvicorn main:app --host 0.0.0.0 --port 9000 > server.log 2>&1 &
+          sleep 15
 
-      - name: Start FastAPI Server
+      - name: Verify server is running
         run: |
-          cd backend
-          uvicorn main:app --host 0.0.0.0 --port 8000 &
-          sleep 10
+          curl http://localhost:9000/expenses || true
 
-      - name: Setup Java
-        uses: actions/setup-java@v5
+      - name: Run Specmatic tests
+        run: |
+          docker run --network host \
+            -v ${{ github.workspace }}:/workspace \
+            -w /workspace \
+            specmatic/specmatic:latest test \
+            --host http://localhost:9000 \
+            openapi/expense-sharing-api.yaml
+
+      - name: Upload Reports
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Install Specmatic
-        run: |
-          curl -L https://specmatic.io/download/latest/linux/specmatic -o specmatic
-          chmod +x specmatic
-      
-      - name: Run Contract Tests
-        run: |
-          ./specmatic test --host http://localhost:8000
-
-
-
-
-
-
-
-
-
+          name: specmatic-report
+          path: build/reports/specmatic
