@@ -28,7 +28,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/GroupResponse"
               examples:
-                success:
+                createGroup:
                   value:
                     groupId: 1
                     name: Goa Trip
@@ -113,7 +113,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ExpenseResponse"
               examples:
-                success:
+                addExpense:
                   value:
                     expenseId: 1
                     status: CREATED
@@ -202,7 +202,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/SettlementResponse"
               examples:
-                success:
+                settlement:
                   value:
                     settlementId: 1
                     status: SUCCESS
